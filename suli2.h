@@ -361,6 +361,7 @@ uint8_t suli_i2c_read(I2C_T *i2c_device, uint8_t dev_addr, uint8_t *buff, int le
 #if defined(__MBED__)
 
 typedef serial_t UART_T;
+typedef void (*cb_fun_ptr)(void);//jacly add
 
 /**
  * void suli_uart_init(UART_T *, int pin_tx, int pin_rx, uint32_t baud)
@@ -369,6 +370,16 @@ inline void suli_uart_init(UART_T *uart, int pin_tx, int pin_rx, uint32_t baud)
 {
     serial_init(uart, (PinName)pin_tx, (PinName)pin_rx);
     serial_baud(uart, (int)baud);
+}
+
+/**
+jacly add
+ * void suli_uart_attach(UART_T *uart, SerialIrq irq, uint32_t enable)
+ */
+inline void suli_uart_rx_event_attach(UART_T *uart, cb_fun_ptr irq)
+{
+	serial_irq_handler(uart, (uart_irq_handler)irq, 1);
+	serial_irq_set(uart, RxIrq, 1);
 }
 
 /**
