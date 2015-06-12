@@ -56,6 +56,8 @@ typedef gpio_t IO_T;
 #define SULI_OUTPUT   PIN_OUTPUT
 #define SULI_HIGH     0x01
 #define SULI_LOW      0x00
+#define SULI_RISE     IRQ_RISE
+#define SULI_FALL     IRQ_FALL  //Note that: we drop changing interrupt as the same thing can be done by using Rise and Fall
 
 /**
  * void suli_pin_init(IO_T *, PIN_T, PIN_DIR )
@@ -82,7 +84,7 @@ typedef gpio_t IO_T;
  */
 uint32_t suli_pin_pulse_in(IO_T *pio, int state, uint32_t timeout);
 
-#define suli_pin_attach_interrupt_handler(pio, func, mode)
+#define  suli_pin_attach_interrupt_handler(pio, handler, mode, para)
 
 
 //-------------- arduino ---------------
@@ -93,6 +95,8 @@ typedef int IO_T;
 #define SULI_OUTPUT   OUTPUT
 #define SULI_HIGH     0x01
 #define SULI_LOW      0x00
+#define SULI_RISE     RISING
+#define SULI_FALL     FALLING  //Note that: we drop changing interrupt as the same thing can be done by using Rise and Fall
 
 /**
  * void suli_pin_init(IO_T *, PIN_T, PIN_DIR )
@@ -119,7 +123,19 @@ typedef int IO_T;
  */
 #define suli_pin_pulse_in(pio,state,timeout)  pulseIn(*(pio), state, timeout)
 
-#define suli_pin_attach_interrupt_handler(pio, func, mode) attachInterrupt(*pio, func, mode)
+/**
+ * attach a handler to a interrupt with a parameter ( e.g. a
+ * class instance poiter )
+ */
+#ifdef ESP8266_SEEED_NODE
+typedef void (*interrupt_handler)(void *para);
+extern "C"
+void attachInterruptEx(uint8_t pin, interrupt_handler userFunc, int mode, void *para);
+
+void suli_pin_attach_interrupt_handler(IO_T *pio, interrupt_handler handler, int mode, void *para);
+#else
+#define  suli_pin_attach_interrupt_handler(pio, handler, mode, para)
+#endif
 
 #endif
 
@@ -316,6 +332,12 @@ inline uint8_t suli_i2c_write(I2C_T *i2c_device, uint8_t dev_addr, uint8_t *data
 }
 
 /**
+ * write a buff to reg adress started from reg_addr
+ * I2C dev_addr: 8bits address
+ */
+uint8_t suli_i2c_write_reg(I2C_T *i2c_device, uint8_t dev_addr, uint8_t reg_addr, uint8_t *data, int len);
+
+/**
  * read data from I2C
  * dev_addr: 8bits address
  */
@@ -323,6 +345,14 @@ inline uint8_t suli_i2c_read(I2C_T *i2c_device, uint8_t dev_addr, uint8_t *buff,
 {
     return i2c_read(i2c_device, (int)dev_addr, (char *)buff, len, 1);
 }
+
+/**
+ * read data from I2C's reg_adress
+ * dev_addr: 8bits address
+ */
+uint8_t suli_i2c_read(I2C_T *i2c_device, uint8_t dev_addr, uint8_t reg_addr, uint8_t *buff, int len);
+
+
 
 
 //-------------- Arduino ---------------
@@ -345,11 +375,22 @@ void suli_i2c_init(I2C_T *i2c_device, int pin_sda=0, int pin_clk=0);
 uint8_t suli_i2c_write(I2C_T *i2c_device, uint8_t dev_addr, uint8_t *data, int len);
 
 /**
+ * write a buff to reg adress started from reg_addr
+ * I2C dev_addr: 8bits address
+ */
+uint8_t suli_i2c_write_reg(I2C_T *i2c_device, uint8_t dev_addr, uint8_t reg_addr, uint8_t *data, int len);
+
+/**
  * read data from I2C
  * dev_addr: 8bits address
  */
 uint8_t suli_i2c_read(I2C_T *i2c_device, uint8_t dev_addr, uint8_t *buff, int len);
 
+/**
+ * read data from I2C's reg_adress
+ * dev_addr: 8bits address
+ */
+uint8_t suli_i2c_read_reg(I2C_T *i2c_device, uint8_t dev_addr, uint8_t reg_addr, uint8_t *buff, int len);
 
 #endif
 
@@ -378,8 +419,8 @@ jacly add
  */
 inline void suli_uart_rx_event_attach(UART_T *uart, cb_fun_ptr irq)
 {
-	serial_irq_handler(uart, (uart_irq_handler)irq, 1);
-	serial_irq_set(uart, RxIrq, 1);
+    serial_irq_handler(uart, (uart_irq_handler)irq, 1);
+    serial_irq_set(uart, RxIrq, 1);
 }
 
 /**

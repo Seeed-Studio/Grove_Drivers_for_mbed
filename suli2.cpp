@@ -60,6 +60,36 @@ uint32_t suli_pin_pulse_in(IO_T *pio, int state, uint32_t timeout)
 }
 
 /**
+ * write a buff to reg adress started from reg_addr
+ * I2C dev_addr: 8bits address
+ * TODO: not tested
+ */
+uint8_t suli_i2c_write_reg(I2C_T *i2c_device, uint8_t dev_addr, uint8_t reg_addr, uint8_t *data, int len)
+{
+    uint8_t *buf = (uint8_t *)malloc(len + 1);
+    *buf = reg_addr;
+    memcpy(buf + 1, data, len);
+    uint8_t wlen = i2c_write(i2c_device, (int)dev_addr, (const char *)buf, len+1, 1);
+    free(buf);
+    return wlen;
+}
+
+/**
+ * read data from I2C's reg_adress
+ * dev_addr: 8bits address
+ */
+uint8_t suli_i2c_read(I2C_T *i2c_device, uint8_t dev_addr, uint8_t reg_addr, uint8_t *buff, int len)
+{
+    i2c_write(i2c_device, (int)dev_addr, (const char *)&reg_addr, 1, 0); //not send stop bit
+    return i2c_read(i2c_device, (int)dev_addr, (char *)buff, len, 1);
+}
+
+/**
+ * TODO: suli_i2c_read_reg
+ * @Jacky
+ */
+
+/**
  * send bytes to uart
  * int suli_uart_write_bytes(UART_T *, uint8_t *, int)
  */
@@ -134,6 +164,15 @@ int suli_uart_read_bytes_timeout(UART_T *uart, uint8_t *buff, int len, int timeo
 //---------------------------------------------arduino---------------------------------------------
 #elif defined(ARDUINO)
 
+#ifdef ESP8266_SEEED_NODE
+
+void suli_pin_attach_interrupt_handler(IO_T *pio, interrupt_handler handler, int mode, void *para)
+{
+    attachInterruptEx(*pio, handler, mode, para);
+}
+
+#endif
+
 #if  defined (ARDUINO_USE_I2C) || defined(ESP8266)
 /**
  * I2C interface initialize.
@@ -142,7 +181,7 @@ void suli_i2c_init(I2C_T *i2c_device, int pin_sda, int pin_clk)
 {
 #ifdef ESP8266
     *i2c_device = new TwoWire();  //change the pin defined in pin_arduino.h
-    (*i2c_device)->begin(SDA, SCL);
+    (*i2c_device)->begin(pin_sda, pin_clk);
 #else
     *i2c_device = &Wire;
     (*i2c_device)->begin();
@@ -173,6 +212,29 @@ uint8_t suli_i2c_write(I2C_T *i2c_device, uint8_t dev_addr, uint8_t *data, int l
 
 
 /**
+ * write a buff to I2C
+ * - i2c_device: i2c device pointer
+ * - dev_addr: device address
+ * - reg_addr: register address
+ * - data: data buff
+ * - len: data lenght
+ */
+uint8_t suli_i2c_write_reg(I2C_T *i2c_device, uint8_t dev_addr, uint8_t reg_addr, uint8_t *data, int len)
+{
+    dev_addr = dev_addr >> 1;
+
+    (*i2c_device)->beginTransmission(dev_addr);          // start
+    (*i2c_device)->write(reg_addr);
+    for (int i = 0; i < len; i++)
+    {
+        (*i2c_device)->write(data[i]);                   // send a byte
+    }
+    (*i2c_device)->endTransmission();                    // end
+
+    return len;
+}
+
+/**
  * read a buff to I2C
  * - i2c_device: i2c device pointer
  * - dev_addr: device address
@@ -183,6 +245,33 @@ uint8_t suli_i2c_write(I2C_T *i2c_device, uint8_t dev_addr, uint8_t *data, int l
 uint8_t suli_i2c_read(I2C_T *i2c_device, uint8_t dev_addr, uint8_t *buff, int len)
 {
     dev_addr = dev_addr >> 1;
+    (*i2c_device)->requestFrom(dev_addr, (uint8_t)len);
+
+    int sum_len = 0;
+    while ((*i2c_device)->available())
+    {
+        buff[sum_len++] = (*i2c_device)->read();
+    }
+    return sum_len;
+}
+
+/**
+ * read a buff to I2C
+ * - i2c_device: i2c device pointer
+ * - dev_addr: device address
+ * - reg_addr: register address
+ * - data: data buff
+ * - len: data lenght
+ * return
+ */
+uint8_t suli_i2c_read_reg(I2C_T *i2c_device, uint8_t dev_addr, uint8_t reg_addr, uint8_t *buff, int len)
+{
+    dev_addr = dev_addr >> 1;
+
+    (*i2c_device)->beginTransmission(dev_addr);          // start
+    (*i2c_device)->write(reg_addr);
+    (*i2c_device)->endTransmission(false);                    // repeat start
+
     (*i2c_device)->requestFrom(dev_addr, (uint8_t)len);
 
     int sum_len = 0;
