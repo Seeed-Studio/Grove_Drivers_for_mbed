@@ -1,5 +1,5 @@
 /*
- * grove_acc_mma7660.h
+ * grove_baro_bmp085.h
  *
  * Copyright (c) 2012 seeed technology inc.
  * Website    : www.seeed.cc
@@ -27,55 +27,42 @@
  */
 
 
-#ifndef __GROVE_ACC_MMA7660_CLASS_H__
-#define __GROVE_ACC_MMA7660_CLASS_H__
+#ifndef __H__
+#define __H__
 
 #include "suli2.h"
 
-//GROVE_NAME        "Grove-3Axis Digital Acc(±1.5g)"
+//GROVE_NAME        "Grove-Barometer(BMP085)"
 //IF_TYPE           I2C
-//IMAGE_URL         http://www.seeedstudio.com/wiki/images/b/bb/3_aix_acc.jpg
-
-#define MMA7660_ADDR  (0x4c<<1)
-
-#define MMA7660_X     0x00
-#define MMA7660_Y     0x01
-#define MMA7660_Z     0x02
-#define MMA7660_TILT  0x03
-#define MMA7660_SRST  0x04
-#define MMA7660_SPCNT 0x05
-#define MMA7660_INTSU 0x06
-#define MMA7660_MODE  0x07
-#define MMA7660_STAND_BY 0x00
-#define MMA7660_ACTIVE   0x01
-#define MMA7660_SR    0x08      //sample rate register
-#define AUTO_SLEEP_120  0X00    //120 sample per second
-#define AUTO_SLEEP_64   0X01
-#define AUTO_SLEEP_32   0X02
-#define AUTO_SLEEP_16   0X03
-#define AUTO_SLEEP_8    0X04
-#define AUTO_SLEEP_4    0X05
-#define AUTO_SLEEP_2    0X06
-#define AUTO_SLEEP_1    0X07
-#define MMA7660_PDET  0x09
-#define MMA7660_PD    0x0A
+//IMAGE_URL         http://www.seeedstudio.com/wiki/File:Grove-Barometer.jpg
 
 
 
+#define BMP085_ADDRESS (0x77<<1)
 
-class GroveAccMMA7660
+class GroveBaroBMP085
 {
 public:
-    GroveAccMMA7660(int pinsda, int pinscl);
-    bool read_accelerometer(float *ax, float *ay, float *az);
-    bool read_shacked(uint8_t *shacked);
-
-//private:
+    GroveBaroBMP085(int pinsda, int pinscl);
+    bool read_temperature(float *temperature);
+    bool read_pressure(int32_t *pressure);
+    bool read_altitude(float *altitude);
+private:
     I2C_T *i2c;
+    uint8_t cmdbuf[2];
+    uint8_t databuf[2];
+    const uint8_t OSS = 0;  //0: lowpower 1: standard 2: high 3: ultrahigh accuration
+    int16_t ac1, ac2, ac3;
+    uint16_t ac4, ac5, ac6;
+    int16_t b1, b2;
+    int16_t mb, mc, md;
+    int32_t PressureCompensate;
 
-    void _setmode(uint8_t mode);
-    void _setsamplerate(uint8_t rate);
-    void _getxyz(int8_t *x, int8_t *y, int8_t *z);
+    uint8_t _read_char(unsigned char addr);
+    uint16_t _read_int(unsigned char addr);
+    int32_t _readut(I2C_T *i2c);
+    int32_t _readup(I2C_T *i2c);
+
 };
 
 #endif
