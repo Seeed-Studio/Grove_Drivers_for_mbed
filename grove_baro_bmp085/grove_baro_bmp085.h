@@ -27,14 +27,14 @@
  */
 
 
-#ifndef __H__
-#define __H__
+#ifndef __GROVE_BARO_BMP085_H__
+#define __GROVE_BARO_BMP085_H__
 
 #include "suli2.h"
 
 //GROVE_NAME        "Grove-Barometer(BMP085)"
 //IF_TYPE           I2C
-//IMAGE_URL         http://www.seeedstudio.com/wiki/File:Grove-Barometer.jpg
+//IMAGE_URL         http://www.seeedstudio.com/wiki/images/thumb/e/e7/Grove-Barometer.jpg/621px-Grove-Barometer.jpg
 
 
 

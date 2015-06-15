@@ -1,5 +1,5 @@
 /*
- * grove_temp_hum.cpp
+ * grove_temp_hum_pro.cpp
  *
  * Copyright (c) 2012 seeed technology inc.
  * Website    : www.seeed.cc
@@ -27,19 +27,19 @@
  */
 
 #include "suli2.h"
-#include "grove_temp_hum.h"
+#include "grove_temp_hum_pro.h"
 
 
-GroveTempHum::GroveTempHum(int pin)
+GroveTempHumPro::GroveTempHumPro(int pin)
 {
     this->io = (IO_T *)malloc(sizeof(IO_T));
     suli_pin_init(io, pin, SULI_INPUT);
-    _type = DHT11;
+    _type = DHT22;
     _count = PULSE_COUNTER;
     firstreading = true;
 }
 
-bool GroveTempHum::_read(IO_T *io)
+bool GroveTempHumPro::_read(IO_T *io)
 {
     uint8_t laststate = SULI_HIGH;
     uint8_t counter = 0;
@@ -125,13 +125,13 @@ bool GroveTempHum::_read(IO_T *io)
 
 }
 
-float GroveTempHum::_convertCtoF(float c)
+float GroveTempHumPro::_convertCtoF(float c)
 {
     return c * 9 / 5 + 32;
 }
 
 //boolean S == Scale.  True == Farenheit; False == Celcius
-bool GroveTempHum::read_temperature(float *temperature)
+bool GroveTempHumPro::read_temperature(float *temperature)
 {
     float f;
 
@@ -158,7 +158,7 @@ bool GroveTempHum::read_temperature(float *temperature)
     return false;
 }
 
-bool GroveTempHum::read_temperature_f(float *temperature)
+bool GroveTempHumPro::read_temperature_f(float *temperature)
 {
     float t;
     if (!read_temperature(&t)) return false;
@@ -166,7 +166,7 @@ bool GroveTempHum::read_temperature_f(float *temperature)
     return true;
 }
 
-bool GroveTempHum::read_humidity(float *humidity)
+bool GroveTempHumPro::read_humidity(float *humidity)
 {
     float f;
     if (_read(io))

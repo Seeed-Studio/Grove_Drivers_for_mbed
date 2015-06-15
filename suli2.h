@@ -52,6 +52,7 @@
 #if defined(__MBED__)
 
 typedef gpio_t IO_T;
+
 #define SULI_INPUT    PIN_INPUT
 #define SULI_OUTPUT   PIN_OUTPUT
 #define SULI_HIGH     0x01
@@ -67,12 +68,12 @@ typedef gpio_t IO_T;
 /**
  * void suli_pin_dir(IO_T *, PIN_DIR )
  */
-#define suli_pin_dir(pio,dir) { gpio_dir(pio, dir); }
+#define suli_pin_dir(pio,dir)  gpio_dir(pio, dir)
 
 /**
  * void suli_pin_write(IO_T *, PIN_HIGH_LOW)
  */
-#define suli_pin_write(pio,state) {gpio_write(pio, state);}
+#define suli_pin_write(pio,state)  gpio_write(pio, state)
 
 /**
  * int suli_pin_read(IO_T *)
@@ -91,6 +92,7 @@ uint32_t suli_pin_pulse_in(IO_T *pio, int state, uint32_t timeout);
 #elif defined(ARDUINO)
 
 typedef int IO_T;
+
 #define SULI_INPUT    INPUT
 #define SULI_OUTPUT   OUTPUT
 #define SULI_HIGH     0x01
@@ -106,7 +108,7 @@ typedef int IO_T;
 /**
  * void suli_pin_dir(IO_T *, PIN_DIR )
  */
-#define suli_pin_dir(pio,dir) pinMode(*(pio), dir)
+#define suli_pin_dir(pio,dir)  pinMode(*(pio), dir)
 
 /**
  * void suli_pin_write(IO_T *, PIN_HIGH_LOW)
