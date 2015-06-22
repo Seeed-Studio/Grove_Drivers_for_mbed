@@ -82,7 +82,7 @@ bool GroveAccMMA7660::read_accelerometer(float *ax, float *ay, float *az)
     return true;
 }
 
-bool GroveAccMMA7660::read_shacked(uint8_t *shacked)
+bool GroveAccMMA7660::read_shaked(uint8_t *shaked)
 {
     uint8_t r;
     do
@@ -92,10 +92,10 @@ bool GroveAccMMA7660::read_shacked(uint8_t *shacked)
 
     if (r&0x80)
     {
-        *shacked = 1;
+        *shaked = 1;
     } else
     {
-        *shacked = 0;
+        *shaked = 0;
     }
     return true;
 }

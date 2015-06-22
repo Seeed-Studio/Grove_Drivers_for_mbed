@@ -1,8 +1,40 @@
+/*
+ * grove_digital_light.h
+ *
+ * Copyright (c) 2012 seeed technology inc.
+ * Website    : www.seeed.cc
+ * Author     : Jacky Zhang
+ *
+ * The MIT License (MIT)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 
 
 
 #ifndef __GROVE_DIGITAL_LIGHT_H__
 #define __GROVE_DIGITAL_LIGHT_H__
+
+//GROVE_NAME        "Grove-Digital Light"
+//IF_TYPE           I2C
+//IMAGE_URL         http://www.seeedstudio.com/wiki/images/6/69/Digital_Light_Sensor.jpg
+
 
 #include "suli2.h"
 
@@ -72,8 +104,30 @@
 #define B8C 0x0000   // 0.000 * 2^LUX_SCALE
 #define M8C 0x0000   // 0.000 * 2^LUX_SCALE
 
-void grove_digital_light_init(I2C_T *i2c, int pinsda, int pinscl);
-bool grove_digital_light_write_setup(I2C_T *i2c);
-bool grove_digital_light_readvisiblelux(I2C_T *i2c, uint32_t *lux);
+
+class GroveDigitalLight
+{
+public:
+    GroveDigitalLight(int pinsda, int pinscl);
+    bool read_lux(uint32_t *lux);
+
+private:
+    I2C_T *i2c;
+
+    unsigned char cmdbuf[2];
+    uint16_t ch0, ch1;
+    unsigned long chScale;
+    unsigned long channel1;
+    unsigned long channel0;
+    unsigned long  ratio1;
+    unsigned int b;
+    unsigned int m;
+    unsigned long temp;
+    unsigned long lux;
+
+    void _getLux(I2C_T *i2c);
+    unsigned long _calculateLux(unsigned int iGain, unsigned int tInt, int iType);
+
+};
 
 #endif

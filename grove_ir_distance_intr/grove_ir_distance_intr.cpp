@@ -58,6 +58,6 @@ static void approach_interrupt_handler(void *para)
 {
     GroveIRDistanceInterrupter *g = (GroveIRDistanceInterrupter *)para;
 
-    suli_event_trigger(g->event, "approach", 1);
+    suli_event_trigger(g->event, "approach", *(g->io));
 }
 

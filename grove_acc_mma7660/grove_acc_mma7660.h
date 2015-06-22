@@ -68,7 +68,7 @@ class GroveAccMMA7660
 public:
     GroveAccMMA7660(int pinsda, int pinscl);
     bool read_accelerometer(float *ax, float *ay, float *az);
-    bool read_shacked(uint8_t *shacked);
+    bool read_shaked(uint8_t *shaked);
 
 //private:
     I2C_T *i2c;

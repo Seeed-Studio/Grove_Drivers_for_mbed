@@ -1,5 +1,5 @@
 /*
- * grove_ir_distance_intr.h
+ * grove_button.h
  *
  * Copyright (c) 2012 seeed technology inc.
  * Website    : www.seeed.cc
@@ -27,27 +27,26 @@
  */
 
 
-#ifndef __GROVE_IR_DIST_INTR_H__
-#define __GROVE_IR_DIST_INTR_H__
+#ifndef __GROVE_BUTTON_H__
+#define __GROVE_BUTTON_H__
 
 #include "suli2.h"
 
-//GROVE_NAME        "Grove-IR Distance Interrupter"
+//GROVE_NAME        "Grove-Button"
 //IF_TYPE           GPIO
-//IMAGE_URL         http://www.seeedstudio.com/wiki/images/thumb/e/e1/IR_Distance_Interrupter.jpg/300px-IR_Distance_Interrupter.jpg
+//IMAGE_URL         http://www.seeedstudio.com/wiki/images/thumb/c/ca/Button.jpg/300px-Button.jpg
 
-
-class GroveIRDistanceInterrupter
+class GroveButton
 {
 public:
-    GroveIRDistanceInterrupter(int pin);
-    bool read_approach(uint8_t *approach);
+    GroveButton(int pin);
+    bool read_pressed(uint8_t *pressed);
     bool attach_event_reporter(CALLBACK_T reporter);
     EVENT_T *event;
     IO_T *io;
+    uint32_t time;
 };
 
-static void approach_interrupt_handler(void *para);
-
+static void button_interrupt_handler(void *para);
 
 #endif

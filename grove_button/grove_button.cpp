@@ -1,5 +1,5 @@
 /*
- * grove_ir_distance_intr.h
+ * grove_button.cpp
  *
  * Copyright (c) 2012 seeed technology inc.
  * Website    : www.seeed.cc
@@ -26,28 +26,45 @@
  * THE SOFTWARE.
  */
 
-
-#ifndef __GROVE_IR_DIST_INTR_H__
-#define __GROVE_IR_DIST_INTR_H__
-
 #include "suli2.h"
-
-//GROVE_NAME        "Grove-IR Distance Interrupter"
-//IF_TYPE           GPIO
-//IMAGE_URL         http://www.seeedstudio.com/wiki/images/thumb/e/e1/IR_Distance_Interrupter.jpg/300px-IR_Distance_Interrupter.jpg
+#include "grove_button.h"
 
 
-class GroveIRDistanceInterrupter
+
+GroveButton::GroveButton(int pin)
 {
-public:
-    GroveIRDistanceInterrupter(int pin);
-    bool read_approach(uint8_t *approach);
-    bool attach_event_reporter(CALLBACK_T reporter);
-    EVENT_T *event;
-    IO_T *io;
-};
+    this->io = (IO_T *)malloc(sizeof(IO_T));
 
-static void approach_interrupt_handler(void *para);
+    suli_pin_init(io, pin, INPUT_PULLUP);
+    time = millis();
+}
+
+bool GroveButton::read_pressed(uint8_t *pressed)
+{
+    *pressed = suli_pin_read(io);
+    return true;
+}
 
 
-#endif
+bool GroveButton::attach_event_reporter(CALLBACK_T reporter)
+{
+    this->event = (EVENT_T *)malloc(sizeof(EVENT_T));
+
+    suli_event_init(event, reporter);
+
+    suli_pin_attach_interrupt_handler(io, &button_interrupt_handler, SULI_RISE, this);
+
+    return true;
+}
+
+
+static void button_interrupt_handler(void *para)
+{
+    GroveButton *g = (GroveButton *)para;
+    if (millis() - g->time < 10)
+    {
+        return;
+    }
+    g->time = millis();
+    suli_event_trigger(g->event, "button_pressed", *(g->io));
+}
