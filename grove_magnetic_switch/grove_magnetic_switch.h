@@ -1,5 +1,5 @@
 /*
- * grove_ir_distance_intr.cpp
+ * grove_magnetic_switch.h
  *
  * Copyright (c) 2012 seeed technology inc.
  * Website    : www.seeed.cc
@@ -26,38 +26,27 @@
  * THE SOFTWARE.
  */
 
+
+#ifndef __GROVE_MAGNETIC_SWITCH_H__
+#define __GROVE_MAGNETIC_SWITCH_H__
+
 #include "suli2.h"
-#include "grove_ir_distance_intr.h"
 
-GroveIRDistanceInterrupter::GroveIRDistanceInterrupter(int pin)
+//GROVE_NAME        "Grove-Magnetic Switch"
+//IF_TYPE           GPIO
+//IMAGE_URL         http://www.seeedstudio.com/wiki/images/thumb/c/c0/Magnetic_Switch.jpg/400px-Magnetic_Switch.jpg
+
+class GroveMagneticSwitch
 {
-    this->io = (IO_T *)malloc(sizeof(IO_T));
+public:
+    GroveMagneticSwitch(int pin);
+    bool read_approach(uint8_t *mag_approach);
+    bool attach_event_reporter(CALLBACK_T reporter);
+    EVENT_T *event;
+    IO_T *io;
+    uint32_t time;
+};
 
-    suli_pin_init(io, pin, SULI_INPUT);
-}
+static void mag_approach_interrupt_handler(void *para);
 
-bool GroveIRDistanceInterrupter::read_approach(uint8_t *approach)
-{
-    uint8_t v = suli_pin_read(io);
-    *approach = (v == 0) ? 1 : 0;
-    return true;
-}
-
-bool GroveIRDistanceInterrupter::attach_event_reporter(CALLBACK_T reporter)
-{
-    this->event = (EVENT_T *)malloc(sizeof(EVENT_T));
-
-    suli_event_init(event, reporter);
-
-    suli_pin_attach_interrupt_handler(io, &approach_interrupt_handler, SULI_FALL, this);
-
-    return true;
-}
-
-static void approach_interrupt_handler(void *para)
-{
-    GroveIRDistanceInterrupter *g = (GroveIRDistanceInterrupter *)para;
-
-    suli_event_trigger(g->event, "ir_approached", *(g->io));
-}
-
+#endif
