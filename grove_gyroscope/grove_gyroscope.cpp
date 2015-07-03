@@ -6,7 +6,7 @@
 
 
 //local functions
-static char _read_char(I2C_T *i2c, unsigned char addr);
+//static char _read_char(I2C_T *i2c, unsigned char addr);
 static double grove_gyro_gettemperature(I2C_T *i2c);
 static void grove_gyro_getxyz(I2C_T *i2c, int16_t *x,int16_t *y,int16_t *z);
 
@@ -17,13 +17,13 @@ static int16_t x_offset;
 static int16_t y_offset;
 static int16_t z_offset;
 
-// Read 1 byte from I2C
-static char _read_char(I2C_T *i2c, unsigned char addr)
-{
-	suli_i2c_write(i2c, GYRO_ADDRESS, &addr, 1);
-	suli_i2c_read(i2c, GYRO_ADDRESS, databuf, 1);
-	return databuf[0];
-}
+//// Read 1 byte from I2C
+//static char _read_char(I2C_T *i2c, unsigned char addr)
+//{
+//	suli_i2c_write(i2c, GYRO_ADDRESS, &addr, 1);
+//	suli_i2c_read(i2c, GYRO_ADDRESS, databuf, 1);
+//	return databuf[0];
+//}
 
 void grove_gyroscope_init(I2C_T *i2c, int pinsda, int pinscl)
 {
@@ -52,7 +52,9 @@ static double grove_gyro_gettemperature(I2C_T *i2c)
 	int temp;
 	double temperature;
 	//temp = read(ITG3200_TMP_H, ITG3200_TMP_L);
-	temp = (_read_char(i2c, ITG3200_TMP_H) << 8) + _read_char(i2c, ITG3200_TMP_L);
+	//temp = (_read_char(i2c, ITG3200_TMP_H) << 8) + _read_char(i2c, ITG3200_TMP_L);
+	temp = suli_i2c_read_reg(i2c, GYRO_ADDRESS, ITG3200_TMP_H, databuf, 1) << 8;
+	temp += suli_i2c_read_reg(i2c, GYRO_ADDRESS, ITG3200_TMP_L, databuf, 1);
 	temperature = 35+ ((double) (temp + 13200)) / 280;
 	return(temperature);
 }
@@ -61,9 +63,19 @@ static double grove_gyro_gettemperature(I2C_T *i2c)
 /*          so as to calculate the angular velocity.        */
 static void grove_gyro_getxyz(I2C_T *i2c, int16_t *x,int16_t *y,int16_t *z)
 {
-	*x  = (_read_char(i2c, ITG3200_GX_H) << 8) + _read_char(i2c, ITG3200_GX_L) + x_offset;
-	*y = (_read_char(i2c, ITG3200_GY_H) << 8) + _read_char(i2c, ITG3200_GY_L) + y_offset;
-	*z = (_read_char(i2c, ITG3200_GZ_H) << 8) + _read_char(i2c, ITG3200_GZ_L) + z_offset;
+//	*x  = (_read_char(i2c, ITG3200_GX_H) << 8) + _read_char(i2c, ITG3200_GX_L) + x_offset;
+//	*y = (_read_char(i2c, ITG3200_GY_H) << 8) + _read_char(i2c, ITG3200_GY_L) + y_offset;
+//	*z = (_read_char(i2c, ITG3200_GZ_H) << 8) + _read_char(i2c, ITG3200_GZ_L) + z_offset;
+	int temp_x, temp_y, temp_z;
+	temp_x = suli_i2c_read_reg(i2c, GYRO_ADDRESS, ITG3200_GX_H, databuf, 1) << 8;
+	temp_x += suli_i2c_read_reg(i2c, GYRO_ADDRESS, ITG3200_GX_L, databuf, 1);
+	temp_y = suli_i2c_read_reg(i2c, GYRO_ADDRESS, ITG3200_GY_H, databuf, 1) << 8;
+	temp_y += suli_i2c_read_reg(i2c, GYRO_ADDRESS, ITG3200_GY_L, databuf, 1);
+	temp_z = suli_i2c_read_reg(i2c, GYRO_ADDRESS, ITG3200_GZ_H, databuf, 1) << 8;
+	temp_z += suli_i2c_read_reg(i2c, GYRO_ADDRESS, ITG3200_GZ_L, databuf, 1);
+	*x = temp_x;
+	*y = temp_y;
+	*z = temp_z;
 }
 
 /*Function: Get the angular velocity and its unit is degree per second.*/

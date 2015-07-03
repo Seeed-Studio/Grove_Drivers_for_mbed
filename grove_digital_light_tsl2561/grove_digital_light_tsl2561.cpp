@@ -49,18 +49,22 @@ void GroveDigitalLight::grove_digital_light_getlux(I2C_T *i2c)
 {
 	uint8_t CH0_LOW = 0, CH0_HIGH = 0, CH1_LOW = 0, CH1_HIGH = 0;
 
-	cmdbuf[0] = TSL2561_Channal0L;
-	suli_i2c_write(i2c, TSL2561_Address, cmdbuf, 1);
-	suli_i2c_read(i2c, TSL2561_Address, &CH0_LOW, 1);
-	cmdbuf[0] = TSL2561_Channal0H;
-	suli_i2c_write(i2c, TSL2561_Address, cmdbuf, 1);
-	suli_i2c_read(i2c, TSL2561_Address, &CH0_HIGH, 1);
-	cmdbuf[0] = TSL2561_Channal1L;
-	suli_i2c_write(i2c, TSL2561_Address, cmdbuf, 1);
-	suli_i2c_read(i2c, TSL2561_Address, &CH1_LOW, 1);
-	cmdbuf[0] = TSL2561_Channal1H;
-	suli_i2c_write(i2c, TSL2561_Address, cmdbuf, 1);
-	suli_i2c_read(i2c, TSL2561_Address, &CH1_HIGH, 1);
+//	cmdbuf[0] = TSL2561_Channal0L;
+//	suli_i2c_write(i2c, TSL2561_Address, cmdbuf, 1);
+//	suli_i2c_read(i2c, TSL2561_Address, &CH0_LOW, 1);
+	suli_i2c_read_reg(i2c, TSL2561_Address, TSL2561_Channal0L, &CH0_LOW, 1);
+//	cmdbuf[0] = TSL2561_Channal0H;
+//	suli_i2c_write(i2c, TSL2561_Address, cmdbuf, 1);
+//	suli_i2c_read(i2c, TSL2561_Address, &CH0_HIGH, 1);
+	suli_i2c_read_reg(i2c, TSL2561_Address, TSL2561_Channal0H, &CH0_HIGH, 1);
+//	cmdbuf[0] = TSL2561_Channal1L;
+//	suli_i2c_write(i2c, TSL2561_Address, cmdbuf, 1);
+//	suli_i2c_read(i2c, TSL2561_Address, &CH1_LOW, 1);
+	suli_i2c_read_reg(i2c, TSL2561_Address, TSL2561_Channal1L, &CH1_LOW, 1);
+//	cmdbuf[0] = TSL2561_Channal1H;
+//	suli_i2c_write(i2c, TSL2561_Address, cmdbuf, 1);
+//	suli_i2c_read(i2c, TSL2561_Address, &CH1_HIGH, 1);
+	suli_i2c_read_reg(i2c, TSL2561_Address, TSL2561_Channal1H, &CH1_HIGH, 1);
 
 	ch0 = (CH0_HIGH<<8) | CH0_LOW;
 	ch1 = (CH1_HIGH<<8) | CH1_LOW;

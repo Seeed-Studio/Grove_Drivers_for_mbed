@@ -352,7 +352,7 @@ inline uint8_t suli_i2c_read(I2C_T *i2c_device, uint8_t dev_addr, uint8_t *buff,
  * read data from I2C's reg_adress
  * dev_addr: 8bits address
  */
-uint8_t suli_i2c_read(I2C_T *i2c_device, uint8_t dev_addr, uint8_t reg_addr, uint8_t *buff, int len);
+uint8_t suli_i2c_read_reg(I2C_T *i2c_device, uint8_t dev_addr, uint8_t reg_addr, uint8_t *buff, int len);
 
 
 

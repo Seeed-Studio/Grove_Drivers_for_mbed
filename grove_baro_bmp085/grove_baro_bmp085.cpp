@@ -171,7 +171,7 @@ bool GroveBaroBMP085::read_altitude(float *altitude)
     int32_t p;
     read_temperature(&t);
     read_pressure(&p);
-    Serial1.println(p);
+    //Serial1.println(p);
     float A = (float)p/101325.0;
     float B = 1/5.25588;
     float C = pow(A,B);

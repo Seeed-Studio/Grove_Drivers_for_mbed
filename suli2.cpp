@@ -78,16 +78,21 @@ uint8_t suli_i2c_write_reg(I2C_T *i2c_device, uint8_t dev_addr, uint8_t reg_addr
  * read data from I2C's reg_adress
  * dev_addr: 8bits address
  */
-uint8_t suli_i2c_read(I2C_T *i2c_device, uint8_t dev_addr, uint8_t reg_addr, uint8_t *buff, int len)
-{
-    i2c_write(i2c_device, (int)dev_addr, (const char *)&reg_addr, 1, 0); //not send stop bit
-    return i2c_read(i2c_device, (int)dev_addr, (char *)buff, len, 1);
-}
+//uint8_t suli_i2c_read(I2C_T *i2c_device, uint8_t dev_addr, uint8_t reg_addr, uint8_t *buff, int len)
+//{
+//    i2c_write(i2c_device, (int)dev_addr, (const char *)&reg_addr, 1, 0); //not send stop bit
+//    return i2c_read(i2c_device, (int)dev_addr, (char *)buff, len, 1);
+//}
 
 /**
  * TODO: suli_i2c_read_reg
  * @Jacky
  */
+uint8_t suli_i2c_read_reg(I2C_T *i2c_device, uint8_t dev_addr, uint8_t reg_addr, uint8_t *buff, int len)
+{
+	i2c_write(i2c_device, (int)dev_addr, (const char *)&reg_addr, 1, 1);
+	return i2c_read(i2c_device, (int)dev_addr, (char *)buff, len, 1);
+}
 
 /**
  * send bytes to uart
