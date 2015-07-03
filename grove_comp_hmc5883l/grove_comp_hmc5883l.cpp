@@ -41,8 +41,8 @@ void GroveCompass::grove_compass_getxyz_raw(I2C_T *i2c, int16_t *x, int16_t *y, 
 //	suli_i2c_read(i2c, HMC5883L_ADDRESS, databuf, 6);
 	suli_i2c_read_reg(i2c, HMC5883L_ADDRESS, DATA_REGISTER_BEGIN, databuf, 6);
 	*x = (databuf[0] << 8) | databuf[1];
-	*y = (databuf[2] << 8) | databuf[3];
-	*z = (databuf[4] << 8) | databuf[5];
+	*z = (databuf[2] << 8) | databuf[3];
+	*y = (databuf[4] << 8) | databuf[5];
 }
 
 bool GroveCompass::grove_compass_getxyz_scaled(I2C_T *i2c, float *cx, float *cy, float *cz)
